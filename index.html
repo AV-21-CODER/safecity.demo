@@ -1,0 +1,204 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Report and map civic infrastructure issues in New Delhi.">
+  <meta name="theme-color" content="#14252d">
+  <title>SafeCity | New Delhi</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="header">
+    <a class="brand" href="index.html"><span class="brand-mark">S</span> SafeCity</a>
+    <nav>
+      <a href="#map-section">Issue map</a>
+      <a href="#report-section">Report an issue</a>
+      <a href="#reports-section">Reports</a>
+    </nav>
+    <span class="city-label">NEW DELHI, INDIA</span>
+  </header>
+
+  <main class="container">
+    <section class="intro">
+      <p class="eyebrow">CIVIC ISSUE REPORTING</p>
+      <h1>Report local problems.<br>Put them on the map.</h1>
+      <p class="intro-text">
+        Document road damage, broken streetlights, garbage overflow and
+        other civic issues. Add a location so the problem can be identified
+        geographically.
+      </p>
+      <a class="button primary" href="#report-section">Submit a report</a>
+    </section>
+
+    <section class="statistics" aria-label="Local report statistics">
+      <article class="stat-card">
+        <p>Total reports</p>
+        <strong id="total-count">0</strong>
+        <small>Stored in this browser</small>
+      </article>
+      <article class="stat-card">
+        <p>Open reports</p>
+        <strong id="open-count">0</strong>
+        <small>Not marked resolved</small>
+      </article>
+      <article class="stat-card">
+        <p>Resolved reports</p>
+        <strong id="resolved-count">0</strong>
+        <small>Locally marked resolved</small>
+      </article>
+    </section>
+
+    <div class="content-grid">
+      <section class="panel" id="map-section">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">GEOGRAPHIC VIEW</p>
+            <h2>New Delhi issue map</h2>
+          </div>
+          <button class="button secondary" id="reset-map" type="button">
+            Reset map
+          </button>
+        </div>
+        <div id="map" aria-label="Interactive map of New Delhi"></div>
+        <p class="help">
+          Map markers represent reports stored in this browser.
+        </p>
+      </section>
+
+      <section class="panel" id="report-section">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">NEW SUBMISSION</p>
+            <h2>Report an issue</h2>
+          </div>
+        </div>
+
+        <form id="report-form">
+          <div class="field">
+            <label for="photo">Upload a photograph</label>
+            <input id="photo" type="file"
+              accept="image/jpeg,image/png,image/webp">
+            <img id="preview" alt="Selected photograph preview" hidden>
+            <p class="help">
+              Optional. JPG, PNG or WEBP, maximum 5 MB.
+              The image is previewed locally and is not uploaded.
+            </p>
+          </div>
+
+          <div class="field">
+            <label for="category">Issue category</label>
+            <select id="category" required>
+              <option value="">Select a category</option>
+              <option>Pothole or road damage</option>
+              <option>Broken streetlight</option>
+              <option>Garbage overflow</option>
+              <option>Waterlogging</option>
+              <option>Damaged footpath</option>
+              <option>Public safety concern</option>
+              <option>Other civic issue</option>
+            </select>
+            <button type="button" class="text-button" id="suggest">
+              Suggest category from text
+            </button>
+            <p class="help" id="suggest-note">
+              This helper uses the filename and description only. It is not AI
+              image recognition.
+            </p>
+          </div>
+
+          <div class="field">
+            <label for="description">Description</label>
+            <textarea id="description" rows="4" maxlength="500"
+              placeholder="Describe the issue and nearby landmark."
+              required></textarea>
+          </div>
+
+          <div class="field">
+            <label for="location">Location</label>
+            <input id="location" maxlength="200"
+              placeholder="For example, Connaught Place, New Delhi" required>
+            <button type="button" class="button secondary" id="use-location">
+              Use my current location
+            </button>
+            <p class="help" id="location-note">
+              Enter a landmark or allow location access.
+            </p>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="priority">Priority</label>
+              <select id="priority">
+                <option>Standard</option>
+                <option>High</option>
+                <option>Low</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="reporter">Name (optional)</label>
+              <input id="reporter" maxlength="60" placeholder="Your name">
+            </div>
+          </div>
+
+          <button class="button primary full-width" type="submit">
+            Save report
+          </button>
+          <p class="help">
+            This prototype does not notify authorities or provide emergency
+            response.
+          </p>
+        </form>
+      </section>
+    </div>
+
+    <section class="panel reports-panel" id="reports-section">
+      <div class="panel-heading">
+        <div>
+          <p class="eyebrow">LOCAL RECORD</p>
+          <h2>Recent reports</h2>
+        </div>
+        <label class="filter-label" for="filter">
+          Status
+          <select id="filter">
+            <option>All</option>
+            <option>Open</option>
+            <option>Resolved</option>
+          </select>
+        </label>
+      </div>
+      <div id="reports-list"></div>
+      <p id="empty-state" class="help">
+        No reports have been saved in this browser yet.
+      </p>
+    </section>
+
+    <aside class="notice-panel">
+      <h2>Prototype limitations</h2>
+      <p>
+        Reports are stored locally and are not shared with other visitors.
+        Image classification is not connected. A production launch requires
+        a shared backend, appropriate privacy controls and a reviewed legal
+        policy.
+      </p>
+    </aside>
+  </main>
+
+  <footer class="footer">
+    <a class="footer-brand" href="index.html">SafeCity</a>
+    <div class="footer-links">
+      <a href="privacy.html">Privacy policy</a>
+      <a href="terms.html">Terms and conditions</a>
+    </div>
+    <span>Map data © OpenStreetMap contributors</span>
+  </footer>
+
+  <div id="message" role="status" aria-live="polite"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
