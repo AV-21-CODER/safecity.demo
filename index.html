@@ -1,75 +1,96 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Report and map civic infrastructure issues in New Delhi.">
-  <meta name="theme-color" content="#14252d">
-  <title>TransitEye | New Delhi</title>
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#14232d">
+  <meta name="description" content="TransitEye helps New Delhi residents document and map local civic issues.">
+  <title>TransitEye | New Delhi Civic Reports</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="header">
-    <a class="brand" href="index.html"><span class="brand-mark">S</span> TransitEye</a>
-    <nav>
+  <header class="site-header">
+    <a class="wordmark" href="index.html">
+      <span class="wordmark-symbol">T</span><span>TransitEye</span>
+    </a>
+    <nav class="main-nav" aria-label="Main navigation">
       <a href="#map-section">Issue map</a>
-      <a href="#report-section">Report an issue</a>
+      <a href="#report-section">Submit a report</a>
       <a href="#reports-section">Reports</a>
     </nav>
-    <span class="city-label">NEW DELHI, INDIA</span>
+    <span class="location-label">NEW DELHI, INDIA</span>
   </header>
 
-  <main class="container">
+  <main class="page-shell">
     <section class="intro">
       <p class="eyebrow">CIVIC ISSUE REPORTING</p>
-      <h1>Report local problems.<br>Put them on the map.</h1>
-      <p class="intro-text">
-        Document road damage, broken streetlights, garbage overflow and
-        other civic issues. Add a location so the problem can be identified
-        geographically.
+      <h1>Document a local issue.<br>Make it easier to act.</h1>
+      <p class="intro-copy">
+        Report potholes, damaged footpaths, overflowing garbage and other local
+        civic issues. Verify the exact map point, view its coordinates and attach
+        photo evidence to your report.
       </p>
-      <a class="button primary" href="#report-section">Submit a report</a>
+      <a class="button button-primary" href="#report-section">Submit a report</a>
     </section>
 
-    <section class="statistics" aria-label="Local report statistics">
-      <article class="stat-card">
+    <section class="summary-grid" aria-label="Report totals">
+      <article class="summary-card">
         <p>Total reports</p>
         <strong id="total-count">0</strong>
-        <small>Stored in this browser</small>
+        <span>Saved in this browser</span>
       </article>
-      <article class="stat-card">
+      <article class="summary-card">
         <p>Open reports</p>
         <strong id="open-count">0</strong>
-        <small>Not marked resolved</small>
+        <span>Not marked resolved</span>
       </article>
-      <article class="stat-card">
+      <article class="summary-card">
         <p>Resolved reports</p>
         <strong id="resolved-count">0</strong>
-        <small>Locally marked resolved</small>
+        <span>Marked resolved locally</span>
       </article>
     </section>
 
-    <div class="content-grid">
-      <section class="panel" id="map-section">
+    <div class="workspace">
+      <section class="panel map-panel" id="map-section">
         <div class="panel-heading">
           <div>
             <p class="eyebrow">GEOGRAPHIC VIEW</p>
             <h2>New Delhi issue map</h2>
           </div>
-          <button class="button secondary" id="reset-map" type="button">
+          <button class="button button-secondary button-small" id="reset-map" type="button">
             Reset map
           </button>
         </div>
-        <div id="map" aria-label="Interactive map of New Delhi"></div>
-        <p class="help">
-          Map markers represent reports stored in this browser.
+
+        <div id="map" aria-label="Interactive map centered on New Delhi"></div>
+
+        <p class="map-instructions">
+          <strong>Need a more precise point?</strong>
+          Enter an address or landmark, then click the exact spot on the map.
+          The selected latitude and longitude will be used for your report.
+        </p>
+
+        <div class="coordinates-box">
+          <div>
+            <span class="coordinate-label">LATITUDE</span>
+            <strong id="map-latitude">Not selected</strong>
+          </div>
+          <div>
+            <span class="coordinate-label">LONGITUDE</span>
+            <strong id="map-longitude">Not selected</strong>
+          </div>
+        </div>
+
+        <p class="supporting-note">
+          Coordinates identify the selected point, not the entire neighbourhood.
+          Address matching and map tiles require internet access.
         </p>
       </section>
 
-      <section class="panel" id="report-section">
+      <section class="panel form-panel" id="report-section">
         <div class="panel-heading">
           <div>
             <p class="eyebrow">NEW SUBMISSION</p>
@@ -79,19 +100,18 @@
 
         <form id="report-form">
           <div class="field">
-            <label for="photo">Upload a photograph</label>
-            <input id="photo" type="file"
-              accept="image/jpeg,image/png,image/webp">
-            <img id="preview" alt="Selected photograph preview" hidden>
-            <p class="help">
-              Optional. JPG, PNG or WEBP, maximum 5 MB.
-              The image is previewed locally and is not uploaded.
+            <label for="photo">Photo evidence <span class="field-optional">OPTIONAL</span></label>
+            <input id="photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp">
+            <img id="photo-preview" class="photo-preview" alt="Selected photo preview" hidden>
+            <p class="field-help">
+              JPG, PNG or WEBP, maximum 5 MB. The photo will be compressed for
+              browser storage and shown with the final report.
             </p>
           </div>
 
           <div class="field">
             <label for="category">Issue category</label>
-            <select id="category" required>
+            <select id="category" name="category" required>
               <option value="">Select a category</option>
               <option>Pothole or road damage</option>
               <option>Broken streetlight</option>
@@ -101,102 +121,120 @@
               <option>Public safety concern</option>
               <option>Other civic issue</option>
             </select>
-            <button type="button" class="text-button" id="suggest">
+            <button class="text-action" id="suggest-category" type="button">
               Suggest category from text
             </button>
-            <p class="help" id="suggest-note">
-              This helper uses the filename and description only. It is not AI
-              image recognition.
+            <p class="field-help" id="suggestion-note">
+              The helper checks text only. It does not analyze image pixels or use an AI model.
             </p>
           </div>
 
           <div class="field">
             <label for="description">Description</label>
-            <textarea id="description" rows="4" maxlength="500"
-              placeholder="Describe the issue and nearby landmark."
-              required></textarea>
+            <textarea id="description" name="description" rows="3" maxlength="500"
+              placeholder="Describe the issue and include a nearby landmark." required></textarea>
           </div>
 
           <div class="field">
-            <label for="location">Location</label>
-            <input id="location" maxlength="200"
-              placeholder="For example, Connaught Place, New Delhi" required>
-            <button type="button" class="button secondary" id="use-location">
-              Use my current location
-            </button>
-            <p class="help" id="location-note">
-              Enter a landmark or allow location access.
+            <label for="location">Location or nearby landmark</label>
+            <input id="location" name="location" type="text" maxlength="200"
+              placeholder="For example, Patel Nagar, New Delhi" required>
+            <div class="location-controls">
+              <button class="button button-secondary" id="find-location" type="button">
+                Find address
+              </button>
+              <button class="button button-secondary" id="use-location" type="button">
+                Use my location
+              </button>
+            </div>
+            <p class="field-help" id="location-note">
+              Search for a location, then click the exact point on the map to fine-tune it.
             </p>
           </div>
 
           <div class="field-row">
             <div class="field">
+              <label for="latitude">Latitude</label>
+              <input id="latitude" name="latitude" type="text" readonly
+                placeholder="Select a map point" required>
+            </div>
+            <div class="field">
+              <label for="longitude">Longitude</label>
+              <input id="longitude" name="longitude" type="text" readonly
+                placeholder="Select a map point" required>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
               <label for="priority">Priority</label>
-              <select id="priority">
+              <select id="priority" name="priority">
                 <option>Standard</option>
                 <option>High</option>
                 <option>Low</option>
               </select>
             </div>
             <div class="field">
-              <label for="reporter">Name (optional)</label>
-              <input id="reporter" maxlength="60" placeholder="Your name">
+              <label for="reporter">Name <span class="field-optional">OPTIONAL</span></label>
+              <input id="reporter" name="reporter" type="text" maxlength="60"
+                placeholder="Your name">
             </div>
           </div>
 
-          <button class="button primary full-width" type="submit">
+          <button class="button button-primary submit-button" id="submit-report" type="submit">
             Save report
           </button>
-          <p class="help">
-            This prototype does not notify authorities or provide emergency
-            response.
+          <p class="field-help">
+            This prototype saves reports in your browser. It does not notify public authorities.
           </p>
         </form>
       </section>
     </div>
 
     <section class="panel reports-panel" id="reports-section">
-      <div class="panel-heading">
+      <div class="panel-heading reports-heading">
         <div>
           <p class="eyebrow">LOCAL RECORD</p>
-          <h2>Recent reports</h2>
+          <h2>Submitted reports</h2>
         </div>
-        <label class="filter-label" for="filter">
-          Status
-          <select id="filter">
-            <option>All</option>
-            <option>Open</option>
-            <option>Resolved</option>
+        <label class="filter-label" for="status-filter">
+          Filter
+          <select id="status-filter">
+            <option value="All">All statuses</option>
+            <option value="Open">Open</option>
+            <option value="Resolved">Resolved</option>
           </select>
         </label>
       </div>
-      <div id="reports-list"></div>
-      <p id="empty-state" class="help">
+
+      <div id="reports-list" class="reports-list"></div>
+      <p id="empty-state" class="empty-state">
         No reports have been saved in this browser yet.
       </p>
     </section>
 
-    <aside class="notice-panel">
+    <section class="launch-notice">
       <h2>Prototype limitations</h2>
       <p>
-        Reports are stored locally and are not shared with other visitors.
-        Image classification is not connected. A production launch requires
-        a shared backend, appropriate privacy controls and a reviewed legal
-        policy.
+        Coordinates come from the selected map point or address lookup.
+        Address search results may identify the centre of a neighbourhood rather
+        than a specific building or road segment, so verify the pin manually.
+        Reports and compressed photos are stored in this browser only.
       </p>
-    </aside>
+    </section>
   </main>
 
-  <footer class="footer">
-    <a class="footer-brand" href="index.html">SafeCity</a>
+  <footer class="site-footer">
+    <a class="footer-brand" href="index.html">TransitEye</a>
+    <span>New Delhi civic reporting prototype</span>
     <div class="footer-links">
       <a href="privacy.html">Privacy policy</a>
       <a href="terms.html">Terms and conditions</a>
     </div>
-    <span>Map data © OpenStreetMap contributors</span>
+    <span class="copyright">Map data © OpenStreetMap contributors</span>
   </footer>
 
-  <div id="message" role="status" aria-live="polite"></div>
+  <div id="notice" class="notice" role="status" aria-live="polite"></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="script.js"></script>
